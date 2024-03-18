@@ -1,0 +1,24 @@
+.container {
+    position: relative;
+    width: 100%;
+    height: 500px; /* Ajusta el tamaño según sea necesario */
+   }
+   
+   .container img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que las imágenes cubran el espacio completo sin distorsionarse */
+   }
+   
+   .container img:nth-child(1) {
+    z-index: 3;
+   }
+   
+   .container img:nth-child(2) {
+    z-index: 2;
+   }
+   
+   .container img:nth-child(3) {
+    z-index: 1;
+   }
