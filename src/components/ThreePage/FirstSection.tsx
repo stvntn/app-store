@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import ImageGallery from './ImageGallery';
-import { Button, Chip, Divider, Paper, Typography } from '@mui/material';
+import { Alert, Button, Chip, Divider, Paper, Snackbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
@@ -11,30 +11,6 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ShareIcon from '@mui/icons-material/Share';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import AllInboxIcon from '@mui/icons-material/AllInbox';
-
-const imagenes = [
-    {
-        src: '/assets/section1-threePage/1.jpg', alt:'1'
-    },
-    {
-        src: '/assets/section1-threePage/2.jpg', alt:'2'
-    },
-    {
-        src: '/assets/section1-threePage/3.jpg', alt:'3'
-    },
-    {
-        src: '/assets/section1-threePage/4.jpg', alt:'4'
-    },
-    {
-        src: '/assets/section1-threePage/5.jpg', alt:'5'
-    },
-    {
-        src: '/assets/section1-threePage/6.jpg', alt:'6'
-    },
-    {
-        src: '/assets/section1-threePage/7.jpg', alt:'7'
-    }
-]
 
 const labels: { [index: string]: string } = {
     1: '(1)',    
@@ -66,20 +42,46 @@ const color = [
     },
 ]
 
-export const FirstSection: React.FC = () => {
+interface FirstSectionProps {
+    product: {
+       id: string;
+       title: string; 
+       images: string[];
+       category: {
+            name: string
+       };
+       price: number       
+    };
+}
+
+interface ImageData {
+    src: string;
+    alt: string;
+}
+
+export const FirstSection: React.FC<FirstSectionProps> = ({ product }) => { 
+
+    console.log(product,'product')
+
+    let images: ImageData[] = []
+
+    product.images.forEach((element, index) => {
+        images.push({src:element, alt:`${index}`})
+    });  
     const value = 3;
     const [progress, setProgress] = React.useState(10);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
+    const [imagenes, setImagenes] = useState<any>(images);
+    const [quantity, setQuantity] = useState(0);
+    const [open, setOpen] = useState(false);
     
     const handleSizeSelection = (size: string) => {
         setSelectedSize(size);
     };
     const handleColorSelection = (color: string) => {
         setSelectedColor(color);
-    };
-
-    const [quantity, setQuantity] = useState(0);
+    };    
 
     const handleIncrement = () => {
         setQuantity(quantity + 1);
@@ -90,16 +92,41 @@ export const FirstSection: React.FC = () => {
             setQuantity(quantity - 1);
         }
     };
+
+    const addProduct = () => {
+        let infoCart: any = localStorage.getItem('infoCart');
+        if (!infoCart) {
+            const dataProduct = {
+                product, quantity
+            }
+            localStorage.setItem('infoCart', JSON.stringify([dataProduct]))
+            setOpen(true)
+            return
+        }
+        infoCart = JSON.parse(infoCart)
+        let found = false
+        infoCart.forEach((productLocalStorage: any) => {
+            if (productLocalStorage.product.id === product.id && productLocalStorage.product.title === product.title) {
+                productLocalStorage.quantity = productLocalStorage.quantity + quantity
+                found = true
+            }
+        });
+        if (found === false) {
+            infoCart.push( { product, quantity } )
+        }
+        localStorage.setItem('infoCart', JSON.stringify(infoCart))
+        setOpen(true)
+    };    
     
     return (
         <div style={{display:'flex', padding: '50px 100px 100px 100px'}}>
             <ImageGallery images={imagenes} />
             <div>
                 <Typography sx={{fontSize:'14px', fontWeight:'400', fontFamily:'Volkhov', color:'#666666'}}>
-                    FASCO
+                    {product.category.name}
                 </Typography>
                 <Typography sx={{fontSize:'30px', fontWeight:'400', fontFamily:'Volkhov'}}>
-                    Denim Jacket
+                    {product.title}
                 </Typography>
                 <Box
                     sx={{
@@ -120,10 +147,10 @@ export const FirstSection: React.FC = () => {
                 </Box>
                 <div style={{display:'flex', alignItems:'center', marginBottom:'20px'}}>
                     <Typography sx={{fontSize:'24px', fontWeight:'400', fontFamily:'Volkhov'}}>
-                        $39.00
+                        ${product.price}
                     </Typography>
                     <Typography sx={{fontSize:'16px', fontWeight:'400', fontFamily:'Jost', color:'#666666', textDecoration: 'line-through', mx:'10px'}}>
-                        $59.00
+                        ${product.price * 0.33 + product.price}
                     </Typography>
                     <Chip label="SAVE 33%"  sx={{backgroundColor:'#DA3F3F', color:'white !important'}}/>
                 </div>
@@ -203,13 +230,24 @@ export const FirstSection: React.FC = () => {
                 <Typography sx={{fontSize:'16px', fontWeight:'400', fontFamily:'Volkhov', mb:'10px'}}>
                     Quantity
                 </Typography>
-                <Paper elevation={0} sx={{display:"flex", alignItems:"center", width:'120px', height:'46px', justifyContent:'space-around', border:'1px solid', borderColor:'#EEEEEE', mb:'10px'}}>
-                    <Button variant="text" onClick={handleDecrement} style={{color:'black'}}>-</Button>                    
-                        <Typography>
-                            {quantity}
-                        </Typography>                    
-                    <Button variant="text" onClick={handleIncrement} style={{color:'black'}}>+</Button>
-                </Paper>
+                <div style={{display:'flex', justifyContent:'space-between'}}>
+                    <Paper elevation={0} sx={{display:"flex", alignItems:"center", width:'120px', height:'46px', justifyContent:'space-around', border:'1px solid', borderColor:'#EEEEEE', mb:'10px'}}>
+                        <Button variant="text" onClick={handleDecrement} style={{color:'black'}}>-</Button>                    
+                            <Typography>
+                                {quantity}
+                            </Typography>                    
+                        <Button variant="text" onClick={handleIncrement} style={{color:'black'}}>+</Button>
+                    </Paper>                    
+                    <Button 
+                        variant='outlined' 
+                        disabled={quantity === 0} 
+                        style={{width:'350px', height:'45px', textTransform:'none'}}
+                        color={'black' as any}
+                        onClick={addProduct}
+                    >
+                        Add to cart
+                    </Button>
+                </div>
                 <div>
                     <Button variant='text' startIcon={<SyncAltIcon style={{ transform: 'rotate(90deg)'}} />} style={{color:'black', textTransform:'none'}}>
                         <Typography sx={{fontSize:'16px', fontWeight:'400', fontFamily:'Jost'}}>
@@ -247,6 +285,21 @@ export const FirstSection: React.FC = () => {
                     </Typography>
                 </div>
             </div>
+            <Snackbar
+                anchorOrigin={{ vertical:'bottom', horizontal:'center' }}
+                open={open}
+                onClose={() => {setOpen(false)}}
+                autoHideDuration={8000}
+            >
+                <Alert
+                    onClose={() => {setOpen(false)}}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Product added to cart successfully
+                </Alert>
+            </Snackbar>
         </div>
     )
 }

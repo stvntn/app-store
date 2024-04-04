@@ -4,17 +4,17 @@ import Image from 'next/image';
 import Rating from '@mui/material/Rating';
 import { CardActionArea } from '@mui/material';
 import axios from 'axios';
-
+import { useRouter } from 'next/router';
 
 export const ThreeSection: React.FC = () => { 
+
+    const router = useRouter()
 
     const skeletons = [1, 2, 3, 4, 5, 6]
 
     const [loading, setLoading] = useState(false)
 
-    const [products, setProducts] = useState([
-
-    ])
+    const [products, setProducts] = useState([])
     
     const handleRatingChange = (index: number, newValue: number | null) => {
         const newProducts:any = [...products]
@@ -83,7 +83,7 @@ export const ThreeSection: React.FC = () => {
             </div>
             <div style={{display:'flex', justifyContent:'space-between', flexWrap:'wrap'}}>                
                 {!loading && products.map((product:any, index) => (
-                    <Card key={index} sx={{width:'30%', mb:'30px'}}>
+                    <Card key={index} onClick={()=>{router.push(`/Products/${product.id}`)}} sx={{width:'30%', mb:'30px'}}>
                         <CardActionArea>
                             <CardContent>
                                 <img src={product.images[0]} alt='1' width={336} height={244} style={{width:'100%', height:'100%'}}/>

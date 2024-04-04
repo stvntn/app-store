@@ -33,7 +33,7 @@ export const NavbarShop: React.FC = () => {
                         Shop
                     </Button>
                     <Button 
-                        onClick={()=>{router.push('/Products')}}
+                        onClick={()=>{router.push('')}}
                         variant='text' 
                         style={{fontSize:'16px', color:'black', fontWeight:'400', textTransform:'none', marginRight:'20px'}}>
                         Products
@@ -52,7 +52,8 @@ export const NavbarShop: React.FC = () => {
                     <IconButton sx={{mr:'5px'}}>
                         <StarOutlineIcon />
                     </IconButton>
-                    <IconButton>
+                    <IconButton 
+                        onClick={()=>{router.push('/Car')}}>
                         <ShoppingBagIcon />
                     </IconButton>
                 </Box>

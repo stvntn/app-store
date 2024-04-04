@@ -12,7 +12,7 @@ import { Grid, Paper } from '@mui/material';
     }
 
     const ImageGallery: React.FC<Props> = ({ images }) => {
-        const [currentImage, setCurrentImage] = useState(images[1]);
+        const [currentImage, setCurrentImage] = useState(images[0]);
 
     const handleThumbnailClick = (image: ImageData) => {
         setCurrentImage(image);

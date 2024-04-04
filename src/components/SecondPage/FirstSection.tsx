@@ -5,6 +5,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 function handleClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
     event.preventDefault();
@@ -13,10 +14,20 @@ function handleClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
 
 export const FirstSection: React.FC = () => {
 
+    const router = useRouter()
+
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState<any>([]);
+    const [loadingCategories, setLoadingCategories] = useState(false);
     const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
+    const [count, setCount] = useState(1);
+
+    const handlePagination = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+      };
 
     const priceRanges = [
         {label:"$0-$50", value:'&price_min=0&price_max=50'},
@@ -25,14 +36,7 @@ export const FirstSection: React.FC = () => {
         {label:"$150-$200", value:'&price_min=150&price_max=200'},
         {label:"$200-$300", value:'&price_min=200&price_max=300'},
         {label:"$300-$400", value:'&price_min=300&price_max=400'}
-    ];
-
-    const categories = [
-        "All products",
-        "Best sellers",
-        "New arrivals",
-        "Accessories"
-    ];
+    ];    
 
     const breadcrumbs = [
         <Link underline="hover" key="1" color="text.primary" href="/" onClick={handleClick}>
@@ -45,8 +49,11 @@ export const FirstSection: React.FC = () => {
 
     const getProducts = async() => {
         setLoading(true)
-        await axios.get(`https://api.escuelajs.co/api/v1/products?offset=0&limit=9${
+        const offset = (page - 1)  * 9
+        await axios.get(`https://api.escuelajs.co/api/v1/products?offset=${offset}&limit=9${
                 selectedPriceRange ? selectedPriceRange : ''
+            }${
+                selectedCategory ? `&categoryId=${selectedCategory}` : ''
             }`)
             .then(function (response) {
                 // Manejar la respuesta exitosa
@@ -81,13 +88,81 @@ export const FirstSection: React.FC = () => {
              });            
     };
 
-    useEffect(() => {
+    const getCategories = async() => {
+        setLoadingCategories(true)
+        await axios.get('https://api.escuelajs.co/api/v1/categories')
+            .then(function (response:any) {
+                // Manejar la respuesta exitosa
+                console.log('Respuesta exitosa:', response.data);                
+                setCategories(response.data)
+            })
+            .catch(function (error) {
+                if (error.response) {
+                // La solicitud se realizó y el servidor respondió con un código de estado fuera del rango de 2xx
+                console.log('Error de respuesta:', error.response?.data);
+                console.log('Código de estado:', error.response?.status);
+                console.log('Encabezados:', error.response?.headers);
+                } else if (error.request) {
+                // La solicitud se realizó pero no se recibió ninguna respuesta
+                console.log('Error de solicitud:', error.request);
+                } else {
+                // Algo sucedió al configurar la solicitud que desencadenó un error
+                console.log('Error:', error.message);
+                }
+             })
+            .finally(() => {
+                // Este bloque se ejecutará independientemente del resultado de la promesa
+                setLoadingCategories(false); // Detener el indicador de carga
+                console.log('La solicitud ha finalizado.');
+             });            
+    };
+
+    const getAllProducts = async() => {                
+        await axios.get(`https://api.escuelajs.co/api/v1/products?testing=123${
+                selectedPriceRange ? selectedPriceRange : ''
+            }${
+                selectedCategory ? `&categoryId=${selectedCategory}` : ''
+            }`)
+            .then(function (response) {
+                // Manejar la respuesta exitosa
+                console.log('Respuesta exitosa:', response.data);
+                setCount(Math.round(response.data.length/9))
+                console.log('Respuesta exitosa:',Math.round(response.data.length/9));                
+            })
+            .catch(function (error) {
+                if (error.response) {
+                // La solicitud se realizó y el servidor respondió con un código de estado fuera del rango de 2xx
+                console.log('Error de respuesta:', error.response?.data);
+                console.log('Código de estado:', error.response?.status);
+                console.log('Encabezados:', error.response?.headers);
+                } else if (error.request) {
+                // La solicitud se realizó pero no se recibió ninguna respuesta
+                console.log('Error de solicitud:', error.request);
+                } else {
+                // Algo sucedió al configurar la solicitud que desencadenó un error
+                console.log('Error:', error.message);
+                }
+             });                      
+    };
+
+    useEffect(() => {        
         getProducts();
+        getCategories();
+        getAllProducts();
     }, []);
     
     useEffect(() => {
+        if(page === 1){
+            getProducts();
+            getAllProducts();
+        } else {
+            setPage(1)
+        }        
+    }, [selectedPriceRange, selectedCategory]);
+
+    useEffect(() => {
         getProducts()
-    }, [selectedPriceRange]);
+    }, [page]);
 
     return (
         <div style={{ marginBottom: '100px' }}>
@@ -123,7 +198,13 @@ export const FirstSection: React.FC = () => {
                         {priceRanges.map((price, index) => (
                             <Button
                                 key={index}
-                                onClick={() => setSelectedPriceRange(price.value)}
+                                onClick={() => {
+                                    if(selectedPriceRange === price.value) {
+                                        setSelectedPriceRange(null)
+                                    } else{
+                                        setSelectedPriceRange(price.value)
+                                    }
+                                }}
                                 style={{
                                     fontSize: '16px',
                                     fontWeight: '400',
@@ -142,18 +223,24 @@ export const FirstSection: React.FC = () => {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={{ padding: '0' }}>
-                            {categories.map((category, index) => (
+                            {!loadingCategories && categories.map((category:any, index:number) => (
                                 <Button
-                                    key={index}
-                                    onClick={() => setSelectedCategory(category)}
+                                    key={index}                                    
+                                    onClick={() => {
+                                        if(selectedCategory === category.id) {
+                                            setSelectedCategory(null)
+                                        } else{
+                                            setSelectedCategory(category.id)
+                                        }
+                                    }}
                                     style={{
                                         fontSize: '16px',
                                         fontWeight: '400',
-                                        color: selectedCategory === category ? '#000' : '#8A8A8A',
+                                        color: selectedCategory === category.id ? '#000' : '#8A8A8A',
                                         cursor: 'pointer'
                                     }}
                                 >
-                                    {category}
+                                    {category.name}
                                 </Button>
                             ))}
                         </AccordionDetails>
@@ -187,7 +274,7 @@ export const FirstSection: React.FC = () => {
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', flexWrap: 'wrap' }}>
                         {!loading && products.map((product: any, index) => (
-                            <Card key={index} style={{ border: "none", boxShadow: "none", width: '30%', marginBottom: '30px' }}>
+                            <Card key={index} onClick={()=>{router.push(`/Products/${product.id}`)}} style={{ border: "none", boxShadow: "none", width: '30%', marginBottom: '30px' }}>
                                 <CardActionArea>
                                     <img src={product.images[0]} alt='1' width={336} height={244} style={{ width: '100%', height: '100%' }} />
                                     <Typography sx={{ fontSize: '16px', fontWeight: '400', fontFamily: 'Volkhov' }}>
@@ -204,7 +291,11 @@ export const FirstSection: React.FC = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Stack spacing={2}>
-                    <Pagination count={3} />
+                    <Pagination 
+                        page={page} 
+                        onChange={handlePagination}
+                        count={count}
+                    />
                 </Stack>
             </div>
         </div>
