@@ -77,71 +77,80 @@ export const FirstSection: React.FC = () => {
                         </Breadcrumbs>
                     </Stack>
                 </div>
-            </div>                      
+            </div>
+            <Grid container  style={{display:'flex', justifyContent:'space-between', marginTop:'50px', marginBottom:'20px'}}>
+                <Grid item xs={5}>
+                    <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
+                        Product
+                    </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                    <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
+                        Price
+                    </Typography>
+                </Grid>                
+                <Grid item xs={2}>
+                    <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
+                        Quantity
+                    </Typography>
+                </Grid>                
+                <Grid item xs={2}>
+                    <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
+                        Total
+                    </Typography>
+                </Grid>            
+            </Grid>
+            <Divider />            
                 { products.map((productCart: any, index: number) => (
-                    <div key={index} style={{marginTop:'50px', marginBottom:'20px'}}>
-                        <Grid container style={{display:'flex', justifyContent:'space-between'}}>
-                            <Grid item xs={4} >
-                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
-                                    Product
-                                </Typography>
-                                <div style={{display:'flex'}}>                    
-                                    <img src={productCart.product.images[0]} alt='' width={168} height={225}/>                            
-                                    <div>
-                                        <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
-                                            {productCart.product.title}
-                                        </Typography>
-                                        <Typography sx={{ fontSize: '22px', fontWeight: '400', color:'#8A8A8A', my:'10px' }}>
-                                            Color:
-                                        </Typography>
-                                        <Button 
-                                            variant='text'
-                                            onClick={() => {removeProducts(index)}}
-                                        >
-                                            <Typography sx={{ fontSize: '22px', fontWeight: '400', color:'#8A8A8A', textDecoration: 'underline' }}>
-                                                Remove
-                                            </Typography>
-                                        </Button>
-                                    </div>                        
-                                </div>
-                            </Grid>
-                            <Grid item xs={2}>
-                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
-                                    Price
-                                </Typography>
-                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
-                                    ${productCart.product.price}
-                                </Typography> 
-                            </Grid>
-                            <Grid item xs={2}>
-                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
-                                    Quantity
-                                </Typography>            
-                                <Paper elevation={0} sx={{display:"flex", alignItems:"center", width:'120px', height:'46px', justifyContent:'space-around', border:'1px solid', borderColor:'#EEEEEE', mb:'10px'}}>
+                    <Grid container key={index} style={{display:'flex', justifyContent:'space-between', marginTop:'20px', marginBottom:'20px'}}>
+                        <Grid item xs={5}>
+                            <div style={{display:'flex'}}>                    
+                                <img src={productCart.product.images[0]} alt='' width={168} height={205} style={{borderRadius:'10px'}}/>                            
+                                <div style={{marginLeft:'10px'}}>
+                                    <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
+                                        {productCart.product.title}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: '22px', fontWeight: '400', color:'#8A8A8A', my:'10px' }}>
+                                        Color:
+                                    </Typography>
                                     <Button 
-                                        variant="text" 
-                                        disabled={productCart.quantity === 1}
-                                        onClick={()=>handleDecrement(index)} 
-                                        style={{color:'black'}}>-</Button>                    
-                                        <Typography>
-                                            {productCart.quantity}
-                                        </Typography>                    
-                                    <Button 
-                                        variant="text" 
-                                        onClick={()=>handleIncrement(index)} 
-                                        style={{color:'black'}}>+</Button>
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={2}>
-                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
-                                    Total
-                                </Typography>  
-                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
-                                    ${productCart.product.price * productCart.quantity} 
-                                </Typography>  
-                            </Grid> 
-                        </Grid>               
-                    </div>
+                                        variant='text'
+                                        onClick={() => {removeProducts(index)}}
+                                    >
+                                        <Typography sx={{ fontSize: '22px', fontWeight: '400', color:'#8A8A8A', textDecoration: 'underline' }}>
+                                            Remove
+                                        </Typography>
+                                    </Button>
+                                </div>                        
+                            </div>
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
+                                ${productCart.product.price}
+                            </Typography> 
+                        </Grid>
+                        <Grid item xs={2}>            
+                            <Paper elevation={0} sx={{display:"flex", alignItems:"center", width:'120px', height:'46px', justifyContent:'space-around', border:'1px solid', borderColor:'#EEEEEE', mb:'10px'}}>
+                                <Button 
+                                    variant="text" 
+                                    disabled={productCart.quantity === 1}
+                                    onClick={()=>handleDecrement(index)} 
+                                    style={{color:'black'}}>-</Button>                    
+                                    <Typography>
+                                        {productCart.quantity}
+                                    </Typography>                    
+                                <Button 
+                                    variant="text" 
+                                    onClick={()=>handleIncrement(index)} 
+                                    style={{color:'black'}}>+</Button>
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={2}>  
+                            <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
+                                ${productCart.product.price * productCart.quantity} 
+                            </Typography>  
+                        </Grid> 
+                    </Grid>
                 ))}            
             <Divider />
             <div style={{display:'flex', justifyContent:'end'}}>
