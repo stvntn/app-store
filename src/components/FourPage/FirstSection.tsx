@@ -77,26 +77,14 @@ export const FirstSection: React.FC = () => {
                         </Breadcrumbs>
                     </Stack>
                 </div>
-            </div>
-            <div style={{display:'flex', justifyContent:'space-between', marginTop:'50px', marginBottom:'20px'}}>
-                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
-                    Product
-                </Typography>
-                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
-                    Price
-                </Typography>
-                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
-                    Quantity
-                </Typography>
-                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
-                    Total
-                </Typography>
-            </div>
-            <Divider />            
+            </div>                      
                 { products.map((productCart: any, index: number) => (
-                    <div key={index} style={{marginTop:'20px', marginBottom:'20px'}}>
-                        <Grid container>
-                            <Grid item xs={3}>
+                    <div key={index} style={{marginTop:'50px', marginBottom:'20px'}}>
+                        <Grid container style={{display:'flex', justifyContent:'space-between'}}>
+                            <Grid item xs={4} >
+                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
+                                    Product
+                                </Typography>
                                 <div style={{display:'flex'}}>                    
                                     <img src={productCart.product.images[0]} alt='' width={168} height={225}/>                            
                                     <div>
@@ -117,12 +105,18 @@ export const FirstSection: React.FC = () => {
                                     </div>                        
                                 </div>
                             </Grid>
-                            <Grid item xs={3}>
+                            <Grid item xs={2}>
+                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
+                                    Price
+                                </Typography>
                                 <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
                                     ${productCart.product.price}
                                 </Typography> 
                             </Grid>
-                            <Grid item xs={3}>            
+                            <Grid item xs={2}>
+                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
+                                    Quantity
+                                </Typography>            
                                 <Paper elevation={0} sx={{display:"flex", alignItems:"center", width:'120px', height:'46px', justifyContent:'space-around', border:'1px solid', borderColor:'#EEEEEE', mb:'10px'}}>
                                     <Button 
                                         variant="text" 
@@ -138,7 +132,10 @@ export const FirstSection: React.FC = () => {
                                         style={{color:'black'}}>+</Button>
                                 </Paper>
                             </Grid>
-                            <Grid item xs={3}>  
+                            <Grid item xs={2}>
+                                <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400', mb: '40px' }}>
+                                    Total
+                                </Typography>  
                                 <Typography sx={{ fontSize: '22px', fontFamily: 'Volkhov', fontWeight: '400' }}>
                                     ${productCart.product.price * productCart.quantity} 
                                 </Typography>  
